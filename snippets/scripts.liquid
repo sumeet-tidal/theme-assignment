@@ -262,6 +262,12 @@
       ],
       product: [`${basePath}/product-ball.png`, `${basePath}/product-cone.png`, `${basePath}/product-cube.png`],
     },
+    quickview_elements_positions: { // Quick view elements positions to dynamically update via javascript
+      price: `{{ settings.product_price_position | default: '2' }}`,
+      title: `{{ settings.product_title_position | default: '1' }}`,
+      buysection: `{{ settings.buy_buttons_position | default: '4' }}`,
+      variants: `{{ settings.variant_picker_position | default: '3' }}`
+    },
     translations: {
       placeholder_image: `{{ 'content.placeholder_image' | t }}`,
       added: `{{ 'actions.added' | t }}`,

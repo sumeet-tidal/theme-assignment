@@ -187,7 +187,8 @@ export class QuickAddComponent extends Component {
     }
 
     morph(modalContent, productGrid);
-
+    // Added data attribute [data-product-element] to popup elements to change their order dynamically
+    this.#ensureProductElementAttributes(modalContent);
     this.#syncVariantSelection(modalContent);
   }
 
@@ -209,6 +210,85 @@ export class QuickAddComponent extends Component {
       }
     }
   }
+      /**
+   * Ensures all quick view elements have proper data attributes and CSS ordering
+   * @param {Element} container - The container element to search within
+   */
+      #ensureProductElementAttributes(container) {
+
+        // Get quick view elements positions from theme configuration
+        const positions = this.#getPositionSettings();
+  
+        // Add data-product-element="title" to .view-product-title elements and apply ordering
+        const viewProductTitles = container.querySelectorAll('.view-product-title');
+        viewProductTitles.forEach((element) => {
+          element.setAttribute('data-product-element', 'title');
+          if (element instanceof HTMLElement) {
+            element.style.order = positions.title.toString();
+          }
+        });
+    
+        // Add data-product-element="price" to product-price grandparent elements and apply ordering
+        const productPrices = container.querySelectorAll('product-price');
+        productPrices.forEach((element) => {
+          const parentDiv = element.parentElement;
+          if (parentDiv && parentDiv.parentElement) {
+            parentDiv.parentElement.setAttribute('data-product-element', 'price');
+            if (parentDiv.parentElement instanceof HTMLElement) {
+              parentDiv.parentElement.style.order = positions.price.toString();
+            }
+          }
+        });
+    
+        // Add data-product-element="variant-picker" to variant-picker elements and apply ordering
+        const variantPickers = container.querySelectorAll('variant-picker');
+        variantPickers.forEach((element) => {
+          element.setAttribute('data-product-element', 'variant-picker');
+          if (element instanceof HTMLElement) {
+            element.style.order = positions.variants.toString();
+          }
+        });
+    
+        // Add data-product-element="buy-buttons" to product-form-component elements and apply ordering
+        const productForms = container.querySelectorAll('.buy-buttons-block');
+        productForms.forEach((element) => {
+          element.setAttribute('data-product-element', 'buy-buttons');
+          if (element instanceof HTMLElement) {
+            element.style.order = positions.buyButtons.toString();
+          }
+        });
+    
+        // Ensure container uses flexbox for ordering
+        const productDetails = container.querySelector('.product-details');
+        if (productDetails instanceof HTMLElement) {
+          productDetails.style.display = 'flex';
+          productDetails.style.flexDirection = 'column';
+        }
+      }
+    
+      /**
+       * Get position settings from theme configuration
+       * @returns {Object} Position settings for each element
+       */
+      #getPositionSettings() {
+        
+        if (typeof window !== 'undefined' && Theme && Theme.quickview_elements_positions) {
+          return {
+            title: parseInt(Theme.quickview_elements_positions.title) || 1,
+            price: parseInt(Theme.quickview_elements_positions.price) || 2,
+            variants: parseInt(Theme.quickview_elements_positions.variants) || 3,
+            buyButtons: parseInt(Theme.quickview_elements_positions.buysection) || 4
+          };
+        }
+        
+        // Fallback defaults elements positions
+        return {
+          title: 1,
+          price: 2, 
+          variants: 3,
+          buyButtons: 4
+        };
+      }
 }
 
 if (!customElements.get('quick-add-component')) {
@@ -252,8 +332,22 @@ class QuickAddDialog extends DialogComponent {
 
     if (!anchorElement) return;
 
-    if (viewMoreDetailsLink) viewMoreDetailsLink.href = anchorElement.href;
-    if (mobileProductTitle) mobileProductTitle.href = anchorElement.href;
+    if (viewMoreDetailsLink) {
+      viewMoreDetailsLink.href = anchorElement.href;
+      // Add data-product-element attribute to the view-product-title element
+      const viewProductTitleDiv = viewMoreDetailsLink.closest('.view-product-title');
+      if (viewProductTitleDiv) {
+        viewProductTitleDiv.setAttribute('data-product-element', 'title');
+      }
+    }
+    if (mobileProductTitle) {
+      mobileProductTitle.href = anchorElement.href;
+      // Add data-product-element attribute if it's in a title container
+      const titleContainer = mobileProductTitle.closest('.product-header');
+      if (titleContainer) {
+        mobileProductTitle.setAttribute('data-product-element', 'title');
+      }
+    }
   };
 
   #handleDialogClose = () => {

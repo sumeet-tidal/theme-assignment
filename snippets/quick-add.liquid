@@ -9,6 +9,7 @@
 {% liquid
   assign product_form_id = 'QuickAdd-ProductForm-' | append: product.id | append: '-' | append: block.id
   assign add_to_cart_text = 'actions.add' | t
+  assign placement = settings.quick_add_placement | default: 'bottom-right'
 
   # Logic to determine which variant to use (matching swatch selection logic from product-card)
   assign variant_to_use = product.selected_or_first_available_variant
@@ -59,7 +60,7 @@
 %}
 
 <quick-add-component
-  class="quick-add color-{{ settings.quick_add_color_scheme }} "
+  class="quick-add color-{{ settings.quick_add_color_scheme }} quick-add--{{ placement }}"
   ref="quickAdd"
   data-product-title="{{ product.title }}"
 >
@@ -131,34 +132,118 @@
   </product-form-component>
 </quick-add-component>
 
+<style>
+  .quick-add-modal__content .view-product-title a {
+
+  font-size: {{ settings.title_desktop_font_size | default: 1.5 }}rem;
+}
+
+.quick-add-modal__content [ref="priceContainer"] .price {
+  font-size: {{ settings.price_desktop_font_size }}rem;
+}
+
+.quick-add-modal__content .variant-picker__form fieldset legend {
+ font-size: {{ settings.option_label_desktop_font_size }}rem;
+}
+
+@media screen and (max-width: 749px) {
+
+  .quick-add-modal__content .product-header a:not(product-price *) {
+
+  font-size: {{ settings.title_mobile_font_size | default: 1.5 }}rem;
+}
+
+.quick-add-modal__content [ref="priceContainer"] .price {
+  font-size: {{ settings.price_mobile_font_size }}rem;
+}
+
+.quick-add-modal__content .variant-picker__form fieldset legend {
+ font-size: {{ settings.option_label_mobile_font_size }}rem;
+}
+
+}
+</style>
+
 {% stylesheet %}
   /* Quick Add */
   .quick-add {
-    --quick-add-offset: var(--padding-sm);
-    --quick-add-top: calc(var(--quick-add-offset) + var(--padding-block-start));
-    --quick-add-right: calc(var(--quick-add-offset) + var(--padding-inline-end));
-    --quick-add-bottom: calc(var(--quick-add-offset) + var(--padding-block-end));
-    --quick-add-left: calc(var(--quick-add-offset) + var(--padding-inline-end));
+      position: absolute;
+      z-index: 2;
+      transition: opacity 0.2s ease;
+  }
+  .svg-wrapper {
+    display: block ruby;
+  }
 
-    position: absolute;
-    display: var(--quick-add-mobile-display, none);
-    flex-direction: column;
-    justify-content: flex-end;
-    inset: max(var(--quick-add-top), calc((var(--border-radius) + var(--quick-add-top)) * (1 - cos(45deg))))
-      max(var(--quick-add-right), calc((var(--border-radius) + var(--quick-add-right)) * (1 - cos(45deg))))
-      max(var(--quick-add-bottom), calc((var(--border-radius) + var(--quick-add-bottom)) * (1 - cos(45deg))))
-      max(var(--quick-add-left), calc((var(--border-radius) + var(--quick-add-left)) * (1 - cos(45deg))));
-    width: auto;
-    height: auto;
-    z-index: var(--layer-raised);
-    cursor: default;
-    pointer-events: none;
+  .quick-add--top-left {
+    top: 0.5rem;
+    left: 0.5rem;
+  }
 
-    @media screen and (min-width: 750px) {
-      --quick-add-offset: var(--padding-md);
+  .quick-add--top-right {
+    top: 0.5rem;
+    right: 0.5rem;
+  }
 
-      display: var(--quick-add-display, flex);
+  .quick-add--bottom-left {
+    bottom: 0.5rem;
+    left: 0.5rem;
+  }
+
+  .quick-add--bottom-right {
+    bottom: 0.5rem;
+    right: 0.5rem;
+  }
+
+  .quick-add--center {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  @media screen and (max-width: 749px) {
+    .quick-add--center {
+      top: auto;
+      bottom: 0.5rem;
+      left: 50%;
+      transform: translateX(-50%);
     }
+  }
+
+  @container (max-width: 70px) {
+  .card-gallery:hover .quick-add__button {
+    display: block;
+    padding: 5px 18px;
+  }
+}
+
+  .quick-add {
+    opacity: 0.8;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .card-gallery:hover .quick-add {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+
+  .card-gallery:not(:hover) .quick-add {
+    opacity: 0;
+  }
+
+  .card-gallery:hover .quick-add {
+    opacity: 1;
+  }
+
+  .quick-add--top-left {
+    z-index: 1;
+  }
+
+  .product-badges--top-left + .quick-add--top-left {
+    top: 3rem;
+  }
+
+  .product-badges--top-right + .quick-add--top-right {
+    top: 3rem;
   }
 
   .quick-add .variant-option__button-label input[data-option-available='false'] {
@@ -220,7 +305,7 @@
 
   .quick-add__button .add-to-cart-text__content {
     width: 0;
-    opacity: 0;
+    opacity: 1;
     transform: translateX(1em);
     transition: width var(--animation-speed) ease-in-out, opacity var(--animation-speed) ease-in-out,
       transform var(--animation-speed) ease-in-out;
