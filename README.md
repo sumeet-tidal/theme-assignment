@@ -1,4 +1,4 @@
-# 🧭 Tidal Assignment – Shopify Customizations
+# Tidal Assignment – Shopify Customizations
 
 This assignment includes the implementation of **Quick View Popup** functionality on the Product Listing Page (PLP) and **Variant Color Filtering** on the Product Detail Page (PDP) using Shopify’s **Horizon** theme.
 
@@ -35,7 +35,7 @@ This assignment includes the implementation of **Quick View Popup** functionalit
 
 ---
 
-## 📄 Documentation
+##  Documentation
 
 Detailed documentation and client user guide are included in the repository under the `/documents` folder.
 
@@ -46,7 +46,7 @@ Detailed documentation and client user guide are included in the repository unde
 
 ---
 
-### ✅ Notes
+###  Notes
 If you face any issues or have feedback, please contact me for clarification or updates.
 
 ---
